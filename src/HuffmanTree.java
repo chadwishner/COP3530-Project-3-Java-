@@ -6,82 +6,30 @@ import java.io.IOException;
 
 public class HuffmanTree implements HuffmanCoding {
 
+	//just for testing
 	public static void main(String[] args){
 		try{
-			File f = new File("testfile.txt");
+			//File f = new File("testfile.txt");
 			HuffmanTree myTree = new HuffmanTree();
-			System.out.println(myTree.getFrequencies(f));
+			//MinHeap minHeap = myTree.buildTree(f);
+			MinHeap minHeap = new MinHeap();
+			Node node1 = new Node('a', 1);
+			Node node2 = new Node('b', 2);
+			Node node3 = new Node('c', 3);
+			minHeap.insert(node3);
+			minHeap.insert(node2);
+			minHeap.insert(node1);
+
+			for(int x = 0; x < minHeap.array.length; x++){
+				System.out.println(minHeap.array[x]);
+			}
 
 		} catch (Exception e){
-			System.out.println("error");
+			e.printStackTrace();
 		}
 	}
 	
-	Node array[];
-	int last;
-	Node treeHead;
-		
-	void bubbUp(){
-		Node temp;
-		int child = last;
-		int parent = (child-1)/2;
-		while (child != 0 && array[child].frequency < array[parent].frequency){
-			temp = array[parent];
-			array[parent] = array[child];
-			array[child] = temp;
-			child = parent;
-		}
-	}
-	void bubbDown(){
-		Node temp;
-		int parent = 0;
-		
-		int leftChild = (2 * parent) + 1;
-		int rightChild = (2 * parent) + 2;
-		int smallestChild = -1;
-		
-		//add conditions for null pointer exceptions (possible do function)
-		while ((array[leftChild] != null || array[rightChild] != null) && ((array[leftChild] != null && (array[parent].frequency > array[leftChild].frequency)) 
-				|| (array[rightChild] != null && (array[parent].frequency > array[rightChild].frequency)))){
-			
-			if (array[leftChild] != null && array[leftChild].frequency < array[rightChild].frequency){
-				smallestChild = leftChild;
-			} else if (array[rightChild] != null && array[leftChild].frequency > array[rightChild].frequency){
-				smallestChild = rightChild;
-			}
-			
-			temp = array[smallestChild];
-			array[smallestChild] = array[parent];
-			array [parent] = temp;
-			parent = smallestChild;
-			
-			leftChild = (2 * parent) + 1;
-			rightChild = (2 * parent) + 2;
-		}
-	}
-		
-	void insert(Node node){
-		array[last] = node;
-		bubbUp();
-		last ++;
-	}
-		
-	Node remove(){
-		Node temp = treeHead;
-		treeHead = array[last];
-		bubbDown();
-		last --;
-		
-		return temp;	
-	}
-	
-	void arrayToTree(){
-		
-	}
-	
-	@Override
-	public String getFrequencies(File inputFile) throws FileNotFoundException {
-		String charFreq = "";
+	public int[] freqArray(File inputFile) throws FileNotFoundException{
 		int [] charFreqArray = new int[255];
 		
 		int characterInt;	
@@ -104,6 +52,15 @@ public class HuffmanTree implements HuffmanCoding {
 		} catch (IOException error1) {
 			error1.printStackTrace();
 		}
+		
+		return charFreqArray;
+	}
+	
+	@Override
+	public String getFrequencies(File inputFile) throws FileNotFoundException {
+		String charFreq = "";
+		
+		int [] charFreqArray = freqArray(inputFile);
 
 		for (int x = 0; x < 255; x++){
 			charFreq += (char) x + " " + charFreqArray[x] + "\n";  
@@ -116,19 +73,33 @@ public class HuffmanTree implements HuffmanCoding {
 	@Override
 	public HuffTree buildTree(File inputFile) throws FileNotFoundException, Exception {
 		String charFreq = getFrequencies(inputFile);
+		MinHeap minHeap = new MinHeap();
 		
-		array = new Node[255];
-		last = 0;
+		int[] charFreqArray = freqArray(inputFile);
 		
-		String[] charFreqArray = charFreq.split("\n");
 		for (int x = 0; x < charFreqArray.length; x++){
-			Node node = new Node(charFreqArray[x].charAt(0), charFreqArray[x].charAt(2));
+			Node node = new Node((char) x, charFreqArray[x]);
 			if (node.frequency >= 1){
-				insert(node);
+				minHeap.insert(node);
 			}
 		}
+
+		Node temp1;
+		Node temp2;
+		Node temp3;
 		
-		return null;
+		while (minHeap.last > 1){
+			temp1 = minHeap.remove();
+			temp2 = minHeap.remove();
+		
+			temp3 = new Node(temp1.frequency + temp2.frequency, temp1, temp2);
+		
+			minHeap.insert(temp3);
+		}
+		
+		Node temp4 = minHeap.remove();
+		
+		return  new HuffTree(temp4);
 	}
 
 	@Override
