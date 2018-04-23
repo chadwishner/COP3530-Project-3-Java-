@@ -3,31 +3,39 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.*;
 
-public class HuffmanTree implements HuffmanCoding {
+public class HuffmanEncoder implements HuffmanCoding {
 
 	//just for testing
 	public static void main(String[] args){
 		try{
-			//File f = new File("testfile.txt");
-			HuffmanTree myTree = new HuffmanTree();
-			//MinHeap minHeap = myTree.buildTree(f);
-			MinHeap minHeap = new MinHeap();
-			Node node1 = new Node('a', 1);
-			Node node2 = new Node('b', 2);
-			Node node3 = new Node('c', 3);
-			minHeap.insert(node3);
-			minHeap.insert(node2);
-			minHeap.insert(node1);
-
-			for(int x = 0; x < minHeap.array.length; x++){
-				System.out.println(minHeap.array[x]);
-			}
+			File f = new File("testfile.txt");
+			HuffmanEncoder myTree = new HuffmanEncoder();
+			HuffTree huffTree = myTree.buildTree(f);
+			
+			System.out.println(myTree.traverseHuffmanTree(huffTree));
+			
+//			//testing adding
+//			Node test1 = new Node('a',2);
+//			Node test2 = new Node ('b',2);
+//			Node test3 = new Node('c',2);
+//			MinHeap testingHeap = new MinHeap();
+//			testingHeap.insert(test1);
+//			testingHeap.insert(test2);
+//			testingHeap.insert(test3);
+//
+//			while (testingHeap.last > 0){
+//				System.out.println(testingHeap.remove());
+//			}
+			
 
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
+	
+	HashMap<Character, String> hashMap = new HashMap<Character, String>();
 	
 	public int[] freqArray(File inputFile) throws FileNotFoundException{
 		int [] charFreqArray = new int[255];
@@ -54,6 +62,22 @@ public class HuffmanTree implements HuffmanCoding {
 		}
 		
 		return charFreqArray;
+	}
+	
+	public void transverseHelper(Node root, String string){
+		if (root.leftChild == null && root.rightChild == null){
+			hashMap.put(root.character, string);
+			return;
+		}
+		
+		if (root.leftChild != null){
+			transverseHelper(root.leftChild, string + "0");
+		}
+		
+		if (root.rightChild != null){
+			transverseHelper(root.rightChild, string + "1");
+		}
+		
 	}
 	
 	@Override
@@ -92,6 +116,8 @@ public class HuffmanTree implements HuffmanCoding {
 			temp1 = minHeap.remove();
 			temp2 = minHeap.remove();
 		
+			System.out.println(temp1);
+			System.out.println(temp2);
 			temp3 = new Node(temp1.frequency + temp2.frequency, temp1, temp2);
 		
 			minHeap.insert(temp3);
@@ -116,8 +142,31 @@ public class HuffmanTree implements HuffmanCoding {
 
 	@Override
 	public String traverseHuffmanTree(HuffTree huffTree) throws Exception {
+		hashMap.clear();
+		transverseHelper(huffTree.root, "");
+		
+		String returnString= "";
+		String[] asciiMapping = new String[256];
+		
+		for(Character c:hashMap.keySet()){
+			asciiMapping[c] = hashMap.get(c);
+		}
+		
+		for (int x = 0; x < 256; x++){
+			if (asciiMapping[x] != null){
+				returnString += (char) x + " " + asciiMapping[x] + "\n";
+			}
+		}
+		
+		//testing
+		String testing = "";
+		
+		for(Character c:hashMap.keySet()){
+			testing += c + " " + hashMap.get(c) + "\n";
+		}
+		
 		// TODO Auto-generated method stub
-		return null;
+		return returnString;
 	}
 
 }

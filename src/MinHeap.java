@@ -7,7 +7,6 @@ public class MinHeap {
 	public MinHeap(){
 		array = new Node[1];
 		int last = 0;
-		treeHead = array[0];
 	}
 	
 	void bubbUp(){
@@ -24,6 +23,8 @@ public class MinHeap {
 	}
 	
 	void bubbDown(){
+		//make a get child function for both children
+		
 		Node temp;
 		int parent = 0;
 		
@@ -32,22 +33,33 @@ public class MinHeap {
 		int smallestChild = -1;
 		
 		//add conditions for null pointer exceptions (possible do function)
-		while ((array[leftChild] != null || array[rightChild] != null) && ((array[leftChild] != null && (array[parent].frequency > array[leftChild].frequency)) 
-				|| (array[rightChild] != null && (array[parent].frequency > array[rightChild].frequency)))){
-			
-			if (array[leftChild] != null && array[leftChild].frequency < array[rightChild].frequency){
+		while(parent < last){
+			if (array[leftChild] != null && array[rightChild] != null){
+				if (array[leftChild].frequency <= array[rightChild].frequency){
+					smallestChild = leftChild;
+				} else if (array[leftChild].frequency > array[rightChild].frequency){
+					smallestChild = rightChild;
+				}
+			} else if (array[leftChild] != null && array[rightChild] == null){
 				smallestChild = leftChild;
-			} else if (array[rightChild] != null && array[leftChild].frequency > array[rightChild].frequency){
+			} else if (array[leftChild] == null && array[rightChild] != null){
 				smallestChild = rightChild;
+			} else {
+				break;
 			}
 			
-			temp = array[smallestChild];
-			array[smallestChild] = array[parent];
-			array [parent] = temp;
-			parent = smallestChild;
+			if (array[smallestChild].frequency < array[parent].frequency){
+				temp = array[smallestChild];
+				array[smallestChild] = array[parent];
+				array [parent] = temp;
+				parent = smallestChild;
 			
-			leftChild = (2 * parent) + 1;
-			rightChild = (2 * parent) + 2;
+				leftChild = (2 * parent) + 1;
+				rightChild = (2 * parent) + 2;
+			} else {
+				break;
+			}
+			
 		}
 	}
 		
@@ -66,8 +78,9 @@ public class MinHeap {
 	}
 		
 	Node remove(){
-		Node temp = treeHead;
-		treeHead = array[last];
+		Node temp = array[0];
+		array[0] = array[last-1];
+		array[last-1] = null;
 		bubbDown();
 		last --;
 		
