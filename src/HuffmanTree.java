@@ -6,92 +6,77 @@ import java.io.IOException;
 
 public class HuffmanTree implements HuffmanCoding {
 
-	interface HuffBaseNode{
-		boolean isLeaf();
-		int getWeight();
+	public static void main(String[] args){
+		try{
+			File f = new File("testfile.txt");
+			HuffmanTree myTree = new HuffmanTree();
+			System.out.println(myTree.getFrequencies(f));
+
+		} catch (Exception e){
+			System.out.println("error");
+		}
 	}
 	
-	class HuffLeaf implements HuffBaseNode{
-		char element;
-		int weight;
+	Node array[];
+	int last;
+	Node treeHead;
 		
-		HuffLeaf(char elem, int wght){ 
-			element = elem; weight = wght; 
+	void bubbUp(){
+		Node temp;
+		int child = last;
+		int parent = (child-1)/2;
+		while (child != 0 && array[child].frequency < array[parent].frequency){
+			temp = array[parent];
+			array[parent] = array[child];
+			array[child] = temp;
+			child = parent;
 		}
-		
-		char getValue(){
-			return element;
-		}
-		
-		public int getWeight(){
-			return weight;
-		}
-		
-		public boolean isLeaf(){
-			return true;
-		}
-		
 	}
-	
-	public class HuffInternalNode implements HuffBaseNode{
-		int weight;
-		HuffBaseNode left;
-		HuffBaseNode right;
+	void bubbDown(){
+		Node temp;
+		int parent = 0;
 		
-		HuffInternalNode(HuffBaseNode lft, HuffBaseNode rght, int wght){
-			left = lft; 
-			right = rght; 
-			weight = wght;
-		}
-
-		HuffBaseNode left() { 
-			return left; 
-		}
-
-		HuffBaseNode right() {
-			return right; 
-		}
-
-		public int getWeight() {
-			return weight;
-		}
-
-		public boolean isLeaf() {
-			return false; 
-		}
+		int leftChild = (2 * parent) + 1;
+		int rightChild = (2 * parent) + 2;
+		int smallestChild = -1;
 		
-	}
-	
-	public class HuffTree{
-		HuffBaseNode root;
-		
-		HuffTree(char elem, int wght){
-			root = new HuffLeaf(elem, wght); 
-		}
-	  
-		HuffTree(HuffBaseNode lft, HuffBaseNode rght, int wght){
-			root = new HuffInternalNode(lft, rght, wght);
-		}
-		
-		HuffBaseNode root() {
-			return root;
-		}
+		//add conditions for null pointer exceptions (possible do function)
+		while ((array[leftChild] != null || array[rightChild] != null) && ((array[leftChild] != null && (array[parent].frequency > array[leftChild].frequency)) 
+				|| (array[rightChild] != null && (array[parent].frequency > array[rightChild].frequency)))){
 			
-		int getWeight(){
-			return root.getWeight();
-		}
-		
-		int compareTo(Object t) {
-			HuffTree that = (HuffTree)t;
-		    
-			if (root.getWeight() < that.getWeight()){ 
-				return -1;
-			} else if (root.getWeight() == that.getWeight()){ 
-				return 0;
-			} else{ 
-				return 1;
+			if (array[leftChild] != null && array[leftChild].frequency < array[rightChild].frequency){
+				smallestChild = leftChild;
+			} else if (array[rightChild] != null && array[leftChild].frequency > array[rightChild].frequency){
+				smallestChild = rightChild;
 			}
-		  }
+			
+			temp = array[smallestChild];
+			array[smallestChild] = array[parent];
+			array [parent] = temp;
+			parent = smallestChild;
+			
+			leftChild = (2 * parent) + 1;
+			rightChild = (2 * parent) + 2;
+		}
+	}
+		
+	void insert(Node node){
+		array[last] = node;
+		bubbUp();
+		last ++;
+	}
+		
+	Node remove(){
+		Node temp = treeHead;
+		treeHead = array[last];
+		bubbDown();
+		last --;
+		
+		return temp;	
+	}
+	
+	void arrayToTree(){
+		
 	}
 	
 	@Override
@@ -99,15 +84,17 @@ public class HuffmanTree implements HuffmanCoding {
 		String charFreq = "";
 		int [] charFreqArray = new int[255];
 		
-		char character;	
-		
+		int characterInt;	
 		FileReader fileReader = new FileReader(inputFile);
+
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 			
+
 		try {
-			while((character = (char) bufferedReader.read()) != -1){
-				charFreqArray[character]++;
+			while((characterInt = bufferedReader.read()) != -1){
+				charFreqArray[characterInt]++;
 			}
+
 		} catch (IOException error) {
 			error.printStackTrace();
 		}
@@ -119,7 +106,7 @@ public class HuffmanTree implements HuffmanCoding {
 		}
 
 		for (int x = 0; x < 255; x++){
-			charFreq += (char) x + " " + x + "\n";  
+			charFreq += (char) x + " " + charFreqArray[x] + "\n";  
 		}
 		
 		// TODO Auto-generated method stub
@@ -128,7 +115,19 @@ public class HuffmanTree implements HuffmanCoding {
 
 	@Override
 	public HuffTree buildTree(File inputFile) throws FileNotFoundException, Exception {
-		// TODO Auto-generated method stub
+		String charFreq = getFrequencies(inputFile);
+		
+		array = new Node[255];
+		last = 0;
+		
+		String[] charFreqArray = charFreq.split("\n");
+		for (int x = 0; x < charFreqArray.length; x++){
+			Node node = new Node(charFreqArray[x].charAt(0), charFreqArray[x].charAt(2));
+			if (node.frequency >= 1){
+				insert(node);
+			}
+		}
+		
 		return null;
 	}
 
