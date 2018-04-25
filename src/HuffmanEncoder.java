@@ -7,44 +7,6 @@ import java.util.*;
 
 public class HuffmanEncoder implements HuffmanCoding {
 
-//just for testing
-	public static void main(String[] args){
-		try{
-			
-/* MY TESTING CASE */
-			
-//			File f = new File("aaabbc.txt");
-//			HuffmanEncoder myTree = new HuffmanEncoder();
-//			HuffTree huffTree = myTree.buildTree(f);
-//
-//			System.out.println(myTree.getFrequencies(f));
-//			System.out.println(myTree.encodeFile(f, huffTree));
-//			System.out.println(myTree.decodeFile(myTree.encodeFile(f, huffTree), huffTree));			
-//			System.out.println(myTree.traverseHuffmanTree(huffTree));
-
-/*ZACH'S TESTING CASE*/
-			
-			File f = new File("randTest.txt");
-			HuffmanEncoder myTree = new HuffmanEncoder();
-			HuffTree huffTree = myTree.buildTree(f);
-
-			boolean freqCheck = myTree.getFrequencies(f).equals("1 16\n= 64\nG 2\nQ 32\n_ 1\na 128\nw 4\nz 8\n");
-			boolean encodeCheck = myTree.encodeFile(f, huffTree).equals("011011000010110111111110011101010000010011000000011110011111111101101100110010111101011001011010011000000110010001011011100010000110000110100010010000110000101101001011010011011110110011011101000010000011101111100001110100110001000100111110111010111101001101100111111011010101010001000101100010011010001100100101011001010001111110000100100010000011110101101101010001110110000010010010100010011011010011001101110111111001011000111100101101111111101000000110111011100100011001010101010010001010111001111");
-			boolean decodeCheck = myTree.decodeFile(myTree.encodeFile(f, huffTree), huffTree).equals("=a=az=a=aaaaaaaQaa==wQa_aaaaQaaaaaaaa=a=aQaQ=aaa==aQ=a=QaGaQ1=a=aa1zaza=1Qzaz=a=Q=a=Qa=aaa=aQa=aa=zwaa=aaaazaa=Qa11Qaaaa=aa==aaa=Qa=aQaaaaa=a====11=a1Qa=1aQQ==aQ=1aaaaazQ1waaa==a=a==1aa=awQQ=1Qa=a=QaQa=aa=aaaaaQ=a1aaaQ=a=aaaaaaa=Ga=aa=aaQ1aQ====Q1==aaQaaa");
-			boolean transCheck = myTree.traverseHuffmanTree(huffTree).equals("1 0001\n= 01\nG 0000001\nQ 001\n_ 0000000\na 1\nw 000001\nz 00001\n");
-			
-			System.out.println(myTree.getFrequencies(f));
-			System.out.println(myTree.encodeFile(f, huffTree));
-			System.out.println(myTree.decodeFile(myTree.encodeFile(f, huffTree), huffTree));			
-			System.out.println(myTree.traverseHuffmanTree(huffTree));
-			
-			System.out.println("\n\nTESTS\n" + freqCheck + "\n" + encodeCheck + "\n" + decodeCheck + "\n" + transCheck);
-			
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-	}
-	
 	//instantiate global hash map
 	HashMap<Character, String> hashMap = new HashMap<Character, String>();
 	
@@ -192,7 +154,7 @@ public class HuffmanEncoder implements HuffmanCoding {
 
 	/** encode file
 	 * 	encodes an input file into a bit string
-	 * 	O(n) where n is the number of characters in the input file
+	 * 	O(n +m) where n is the number of characters in the input file and m is the number of distinct characters in the string.
 	 * 	@param File input file, huffmanTree to use for mapping
 	 * 	@return String bit string of encoded file
 	 * 	@throws FileNotFoundException
