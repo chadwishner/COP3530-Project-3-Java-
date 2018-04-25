@@ -1,4 +1,4 @@
-public class Node {
+public class Node implements Comparable<Node> {
 	char character;
 	int frequency;
 	Node leftChild = null;
@@ -32,5 +32,16 @@ public class Node {
 
 	public String toString(){
 		return character + " " + frequency;
+	}
+
+	@Override
+	public int compareTo(Node o) {
+		if (this.frequency > o.frequency){
+			return 1;
+		} else if (this.frequency < o.frequency){
+			return -1;
+		} else {
+			return 0;
+		}
 	}
 }

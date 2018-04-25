@@ -18,5 +18,3 @@ public interface HuffmanCoding
 	//print the characters and their codes
 	public String traverseHuffmanTree(HuffTree huffTree) throws Exception;
 }
-
-

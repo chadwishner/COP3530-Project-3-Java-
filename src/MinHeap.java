@@ -33,6 +33,7 @@ public class MinHeap {
 			array[parent] = array[child];
 			array[child] = temp;
 			child = parent;
+			parent = (child - 1)/2;
 		}
 
 	}
@@ -134,5 +135,9 @@ public class MinHeap {
 		last --;
 		
 		return temp;	
+	}
+	
+	Node getTreeHead(){
+		return treeHead;
 	}
 }
