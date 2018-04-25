@@ -8,10 +8,10 @@ public class Node {
 		character = elem; frequency = freq; 
 	}
 	
-	Node(int freq, Node leftChild, Node rightChild){
+	Node(int freq, Node lftChild, Node rghtChild){
 		frequency = freq;
-		leftChild = leftChild;
-		rightChild = rightChild;
+		leftChild = lftChild;
+		rightChild = rghtChild;
 	}
 	
 	public char getValue(){

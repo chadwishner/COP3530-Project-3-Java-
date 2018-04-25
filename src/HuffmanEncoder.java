@@ -7,24 +7,51 @@ import java.util.*;
 
 public class HuffmanEncoder implements HuffmanCoding {
 
-	//just for testing
+//just for testing
 	public static void main(String[] args){
 		try{
-			File f = new File("testfile.txt");
+/* MY TESTING CASE */
+			
+//			File f = new File("aaabbc.txt");
+//			HuffmanEncoder myTree = new HuffmanEncoder();
+//			HuffTree huffTree = myTree.buildTree(f);
+//			
+//			System.out.println(huffTree.root().character + " " + huffTree.root().frequency + "\n");
+//			System.out.println(huffTree.root().getLeftChild().character + " " + huffTree.root().getLeftChild().frequency + "\n");
+//			System.out.println(huffTree.root().getRightChild().getLeftChild().character + " " + huffTree.root().getRightChild().getLeftChild().frequency + "\n");
+//			System.out.println(huffTree.root().getRightChild().getRightChild().character + " " + huffTree.root().getRightChild().getRightChild().frequency + "\n");
+//			
+//			System.out.println(myTree.getFrequencies(f)); //DOES THIS NEED TO ONLY PRINT OUT NON ZEROS IN ASCII ORDER?
+//			System.out.println(myTree.encodeFile(f, huffTree));
+//			System.out.println(myTree.decodeFile("000111110", huffTree));			
+//			System.out.println(myTree.traverseHuffmanTree(huffTree));
+
+/*ZACH'S TESTING CASE*/
+			File f = new File("randTest.txt");
 			HuffmanEncoder myTree = new HuffmanEncoder();
 			HuffTree huffTree = myTree.buildTree(f);
 			
+			//System.out.println(huffTree.root().character + " " + huffTree.root().frequency + "\n");
+			//System.out.println(huffTree.root().getLeftChild().character + " " + huffTree.root().getLeftChild().frequency + "\n");
+			//System.out.println(huffTree.root().getRightChild().getLeftChild().character + " " + huffTree.root().getRightChild().getLeftChild().frequency + "\n");
+			//System.out.println(huffTree.root().getRightChild().getRightChild().character + " " + huffTree.root().getRightChild().getRightChild().frequency + "\n");
+			
+			System.out.println(myTree.getFrequencies(f)); //DOES THIS NEED TO ONLY PRINT OUT NON ZEROS IN ASCII ORDER?
+			System.out.println(myTree.encodeFile(f, huffTree));
+			System.out.println(myTree.decodeFile(myTree.encodeFile(f, huffTree), huffTree));			
 			System.out.println(myTree.traverseHuffmanTree(huffTree));
 			
-//			//testing adding
-//			Node test1 = new Node('a',2);
+/*HEAP TESTING*/
+//			Node test1 = new Node('a',3);
 //			Node test2 = new Node ('b',2);
-//			Node test3 = new Node('c',2);
+//			Node test3 = new Node('c',1);
 //			MinHeap testingHeap = new MinHeap();
 //			testingHeap.insert(test1);
 //			testingHeap.insert(test2);
 //			testingHeap.insert(test3);
+			
 //
+//			testingHeap.remove();
 //			while (testingHeap.last > 0){
 //				System.out.println(testingHeap.remove());
 //			}
@@ -38,14 +65,13 @@ public class HuffmanEncoder implements HuffmanCoding {
 	HashMap<Character, String> hashMap = new HashMap<Character, String>();
 	
 	public int[] freqArray(File inputFile) throws FileNotFoundException{
-		int [] charFreqArray = new int[255];
+		int [] charFreqArray = new int[256];
 		
 		int characterInt;	
 		FileReader fileReader = new FileReader(inputFile);
 
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 			
-
 		try {
 			while((characterInt = bufferedReader.read()) != -1){
 				charFreqArray[characterInt]++;
@@ -86,11 +112,12 @@ public class HuffmanEncoder implements HuffmanCoding {
 		
 		int [] charFreqArray = freqArray(inputFile);
 
-		for (int x = 0; x < 255; x++){
-			charFreq += (char) x + " " + charFreqArray[x] + "\n";  
+		for (int x = 0; x < 256; x++){
+			if (charFreqArray[x] != 0){
+				charFreq += (char) x + " " + charFreqArray[x] + "\n";  
+			}
 		}
 		
-		// TODO Auto-generated method stub
 		return charFreq;
 	}
 
@@ -115,9 +142,7 @@ public class HuffmanEncoder implements HuffmanCoding {
 		while (minHeap.last > 1){
 			temp1 = minHeap.remove();
 			temp2 = minHeap.remove();
-		
-			System.out.println(temp1);
-			System.out.println(temp2);
+						
 			temp3 = new Node(temp1.frequency + temp2.frequency, temp1, temp2);
 		
 			minHeap.insert(temp3);
@@ -128,16 +153,70 @@ public class HuffmanEncoder implements HuffmanCoding {
 		return  new HuffTree(temp4);
 	}
 
+	
+//CHECK WITH ZACH
 	@Override
 	public String encodeFile(File inputFile, HuffTree huffTree) throws FileNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		hashMap.clear();
+		transverseHelper(huffTree.root, "");	
+
+//testing
+//		System.out.println("test " + hashMap.get((char) 97));
+		
+		String returnString = "";
+		int characterInt;	
+		FileReader fileReader = new FileReader(inputFile);
+
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+			
+		try {
+			while((characterInt = bufferedReader.read()) != -1){
+				returnString += hashMap.get((char) characterInt);
+			}
+
+		} catch (IOException error) {
+			error.printStackTrace();
+		}
+		
+		try {
+			bufferedReader.close();
+		} catch (IOException error1) {
+			error1.printStackTrace();
+		}
+		
+		return returnString;
 	}
 
+//CHECK WITH ZACH
 	@Override
 	public String decodeFile(String code, HuffTree huffTree) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		String decodeString = "";
+		Node node = huffTree.root();
+		
+		for (char c: code.toCharArray()){
+			if (c == '0'){
+				node = node.getLeftChild();
+			} else if (c == '1'){
+				node = node.getRightChild();
+			}
+			if (node.getLeftChild() == null && node.getRightChild() == null){
+				decodeString += node.character;
+				node = huffTree.root();
+			}
+		}
+		
+		
+		//traverse the huffman string bit by bit and when you get to a leaf, add that character to the decode string
+		
+//		if (node.getLeftChild() == null && node.getRightChild() == null){
+//			return decodeString += node.character;
+//		} else if (node.getLeftChild() != null && code.charAt(0) == '0'){
+//			return decodeFile(code.substring(1), new HuffTree(node.getLeftChild()));		
+//		} else if (node.getRightChild() != null && code.charAt(0) == '1'){
+//			return decodeFile(code.substring(1), new HuffTree(node.getRightChild()));		
+//		} 
+		
+		return decodeString;
 	}
 
 	@Override
@@ -158,14 +237,14 @@ public class HuffmanEncoder implements HuffmanCoding {
 			}
 		}
 		
-		//testing
-		String testing = "";
+//testing
+//		String testing = "";
+//		
+//		for(Character c:hashMap.keySet()){
+//			testing += c + " " + hashMap.get(c) + "\n";
+//		}
+//testing
 		
-		for(Character c:hashMap.keySet()){
-			testing += c + " " + hashMap.get(c) + "\n";
-		}
-		
-		// TODO Auto-generated method stub
 		return returnString;
 	}
 

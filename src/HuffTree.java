@@ -8,4 +8,5 @@ public class HuffTree{
 	Node root() {
 		return root;
 	}
+	
 }
